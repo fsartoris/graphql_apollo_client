@@ -1,65 +1,55 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import Head from "next/head";
+import Layout from "../components/Layout";
+import { gql, useQuery } from "@apollo/client";
+import Link from "next/link";
 
-export default function Home() {
+const GET_RECLAMOS_USER = gql`
+  query getReclamosUsuario {
+    getReclamosUsuario {
+      id
+      detalle
+      tipo {
+        descripcion
+      }
+      usuario
+    }
+  }
+`;
+
+const Index = () => {
+  const { data, loading, error } = useQuery(GET_RECLAMOS_USER);
+
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
+    <div>
+      <Layout>
+        <h1 className="text-2xl text-gray-900 font-light">Reclamos</h1>
+        <Link href="/nuevoreclamo">
+          <a className="bg-green-700 py-2 px-5 mt-3 inline-block text-white rounded text-sm hover:bg-green-800 mb-3 uppercase font-bold w-full lg:w-auto text-center">
+            Nuevo Reclamo
           </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+        </Link>
+        <div className="overflow-x-scroll">
+          <table className="table-auto shadow-md mt-10 w-full w-lg">
+            <thead className="bg-black">
+              <tr className="text-white">
+                <th className="w-1/5 py-2">Detalle</th>
+                <th className="w-1/5 py-2">Tipo</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white">
+              {loading === false &&
+                data.getReclamosUsuario.map((row) => (
+                  <tr key={row.id}>
+                    <td className="border px-4 py-2">{row.detalle}</td>
+                    <td className="border px-4 py-2">{row.tipo.descripcion}</td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
         </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
+      </Layout>
     </div>
-  )
-}
+  );
+};
+
+export default Index;
